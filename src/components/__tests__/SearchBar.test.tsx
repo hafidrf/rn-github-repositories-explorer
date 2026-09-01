@@ -12,7 +12,7 @@ describe('SearchBar', () => {
     );
     expect(screen.getByTestId('input-query')).toBeTruthy();
     expect(screen.getByTestId('btn-search')).toBeTruthy();
-    expect(screen.getByText('SEARCH')).toBeTruthy();
+    expect(screen.getByText('Search')).toBeTruthy();
     await screen.unmount();
   });
 
