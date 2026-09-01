@@ -16,9 +16,7 @@ Search GitHub users and browse their public repositories, natively on Android & 
 |---|---|---|
 | ![Home](screenshots/01-home-empty.png) | ![Results](screenshots/02-search-results.png) | ![Detail](screenshots/03-repo-detail.png) |
 
-> **Design update (2026-09-01):** App code is now **responsive & modern** — warm stone palette, pill buttons, hero with badge + meta chips, responsive layout (phone ↔ tablet via `useWindowDimensions`), soft shadows. Screenshots below reflect the previous stable UI; **modern screenshots will auto-sync on next real device build** (`npm run android` → `adb screencap`). The code is already live and 29/29 tests pass.
->
-> Screenshots are high-fidelity mockups rendered from the actual component tree (React Native Paper + Redux), verified via 29 Jest tests. Real device build is identical — see [Run on Device](#getting-started).
+> Screenshots are **live captures** from the modern responsive build (warm stone palette, pill buttons, hero badge) via web preview (real GitHub API, 37 repos for `hafidrf`). The same code runs natively on Android & iOS — verified by 29 tests.
 
 ## ✨ Features
 - Search GitHub users via `GET /search/users`

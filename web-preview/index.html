@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>rn-github-repositories-explorer — Web Preview</title>
+<style>
+  :root{
+    --bg:#fafaf9;--surface:#fff;--border:#e7e5e4;--borderStrong:#d6d3d1;
+    --text:#1c1917;--muted:#78716c;--faint:#a8a29e;
+    --primary:#b91c1c;--primarySoft:#fef2f2;--starBg:#fffbeb;--starBorder:#fde68a;
+    --radius:18px;--pill:999px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial}
+  .phone{max-width:420px;margin:0 auto;min-height:100dvh;background:var(--bg);border-left:1px solid var(--border);border-right:1px solid var(--border)}
+  .status{height:44px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-weight:600;font-size:13px}
+  .appbar{height:56px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px;position:sticky;top:0;z-index:10}
+  .appbar h1{font-size:17px;font-weight:800;letter-spacing:-.3px;margin:0;flex:1}
+  .container{padding:16px;display:flex;flex-direction:column;gap:16px}
+  .hero{display:flex;flex-direction:column;gap:10px}
+  .badge{align-self:flex-start;background:var(--primarySoft);border:1px solid #fecaca;border-radius:999px;padding:5px 10px;font-size:10px;font-weight:700;letter-spacing:.2px;color:var(--primary)}
+  .title{font-size:20px;font-weight:800;letter-spacing:-.5px;line-height:1.2;margin:0}
+  .title span{color:var(--primary)}
+  .subtitle{color:var(--muted);font-size:13px;line-height:1.5;margin:0;max-width:480px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{background:#fff;border:1px solid var(--border);border-radius:999px;padding:6px 10px;font-size:11px;color:var(--muted);font-weight:600}
+  .lottieCard{width:160px;height:110px;background:#fff;border:1px solid var(--border);border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;box-shadow:0 8px 20px rgba(28,25,23,.06);align-self:center}
+  .lottieBlob{width:64px;height:44px;background:var(--primarySoft);border-radius:999px;display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:18px}
+  .lottieLabel{font-size:10px;color:var(--faint)}
+  .searchSurface{background:#fff;border:1px solid var(--border);border-radius:18px;padding:14px;box-shadow:0 8px 20px rgba(28,25,23,.06)}
+  .inputWrap{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:14px;padding:10px 12px;background:#fff}
+  .inputWrap:focus-within{border-color:var(--borderStrong);box-shadow:0 0 0 4px rgba(185,28,28,.08)}
+  .inputWrap input{flex:1;border:0;outline:0;font-size:14px;color:var(--text);background:transparent}
+  .inputWrap input::placeholder{color:var(--faint)}
+  .btn{margin-top:12px;background:var(--primary);color:#fff;border:0;border-radius:999px;padding:12px 16px;font-weight:700;font-size:14px;width:100%;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 6px 16px rgba(185,28,28,.2)}
+  .btn:disabled{opacity:.6;cursor:not-allowed}
+  .hint{font-size:11px;color:var(--faint);text-align:center;margin-top:8px}
+  .helper{font-size:11px;color:#dc2626;margin-top:8px}
+  .resultMeta{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:11px;color:var(--muted);padding:0 2px}
+  .resultMeta strong{color:var(--text)}
+  .card{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 2px 10px rgba(28,25,23,.05);overflow:hidden}
+  .accordionHeader{display:flex;align-items:center;gap:12px;padding:14px;cursor:pointer;user-select:none}
+  .avatar{width:36px;height:36px;border-radius:18px;background:#f5f5f4;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);flex-shrink:0;overflow:hidden}
+  .avatar img{width:100%;height:100%;object-fit:cover}
+  .userText{flex:1;min-width:0}
+  .userText .name{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .userText .sub{font-size:11px;color:var(--muted);margin-top:2px}
+  .chevron{color:var(--faint);font-size:14px}
+  .body{padding:0 12px 14px;border-top:1px solid var(--border);background:#fff}
+  .loading{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;padding:20px;color:var(--muted);font-size:12px}
+  .spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:999px;animation:spin 0.8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .repo{background:#f8fafc;border:1px solid var(--border);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
+  .repoTop{display:flex;align-items:flex-start;gap:12px}
+  .repoTitle{flex:1;font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lang{font-size:10px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:6px;margin-top:2px}
+  .dot{width:8px;height:8px;border-radius:999px}
+  .starChip{background:var(--starBg);border:1px solid var(--starBorder);border-radius:999px;padding:4px 8px;font-size:11px;font-weight:700;color:#92400e;display:flex;align-items:center;gap:4px;white-space:nowrap}
+  .desc{font-size:11px;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .meta{display:flex;align-items:center;gap:12px;font-size:10px;color:var(--muted);flex-wrap:wrap}
+  .meta span{display:flex;align-items:center;gap:4px}
+  .openBtn{margin-left:auto;width:26px;height:26px;border-radius:999px;background:var(--primarySoft);border:1px solid #fecaca;display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:12px}
+  .emptyCard{background:#fff;border:1px solid var(--border);border-radius:18px;padding:22px;text-align:center;box-shadow:0 2px 10px rgba(28,25,23,.05)}
+  .emptyEmoji{font-size:22px}
+  .pager{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:4px}
+  .pagerBtn{border:1px solid var(--border);background:#fff;border-radius:999px;padding:8px 16px;font-weight:600;font-size:12px;cursor:pointer}
+  .pagerBtn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .pagerBtn:disabled{opacity:.45;cursor:not-allowed}
+  .pagePill{background:#fff;border:1px solid var(--border);border-radius:999px;padding:6px 12px;display:flex;align-items:baseline;gap:6px;font-size:12px}
+  .footer{text-align:center;font-size:10px;color:var(--faint);padding:12px 16px;border-top:1px solid var(--border);background:#fff}
+  .hidden{display:none !important}
+</style>
+</head>
+<body>
+<div class="phone" id="phone">
+  <div class="status"><span>9:41</span><span style="color:#78716c;font-size:11px">◼ ◼ ◼</span></div>
+  <div class="appbar"><h1>Explorer</h1><span style="color:#78716c">◯</span></div>
+  <div class="container" id="app">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="badge">BARE REACT NATIVE  •  REDUX TOOLKIT</div>
+      <div class="title">GitHub Repositories <span>Explorer</span></div>
+      <p class="subtitle">Search any GitHub username and explore public repositories — fast, native, delightful.</p>
+      <div class="chips"><span class="chip">◯ GitHub API</span><span class="chip">⚡ Fast</span><span class="chip">▣ Native</span></div>
+      <div class="lottieCard"><div class="lottieBlob">▶</div><div class="lottieLabel">Lottie animation</div></div>
+    </div>
+
+    <!-- Search -->
+    <div class="searchSurface">
+      <div class="inputWrap" id="inputWrap">
+        <span style="color:#a8a29e">⌕</span>
+        <input id="q" placeholder="Search GitHub username…" autocomplete="off" />
+        <button id="clear" class="hidden" style="background:none;border:0;color:#a8a29e;cursor:pointer;font-size:14px">✕</button>
+      </div>
+      <div id="helper" class="helper hidden">Username is required</div>
+      <button id="searchBtn" class="btn">Search <span>→</span></button>
+      <div class="hint">Try "hafidrf" or "torvalds"</div>
+    </div>
+
+    <div id="resultMeta" class="resultMeta hidden"></div>
+    <div id="errorCard" class="card hidden" style="padding:14px;background:#fef2f2;border-color:#fecaca"></div>
+
+    <!-- Empty / List -->
+    <div id="empty" class="emptyCard">
+      <div class="emptyEmoji">🔍</div>
+      <div style="font-weight:700;margin-top:6px">Start exploring</div>
+      <div style="font-size:11px;color:#78716c;margin-top:4px">Try "hafidrf", "torvalds", or any GitHub username.</div>
+    </div>
+
+    <div id="list" style="display:flex;flex-direction:column;gap:12px"></div>
+
+    <div id="pager" class="pager hidden">
+      <button id="prevBtn" class="pagerBtn">Prev</button>
+      <div class="pagePill"><span id="pageLabel" style="font-weight:700">Page 1</span><span id="pageOf" style="color:#a8a29e;font-size:10px">of 1</span></div>
+      <button id="nextBtn" class="pagerBtn primary">Next</button>
+    </div>
+  </div>
+  <div class="footer">Built with React Native + Redux Toolkit  •  GitHub API  •  29 tests</div>
+</div>
+
+<script>
+const PER_PAGE = 5;
+let state = { query: '', page: 1, users: [], totalCount: 0, status: 'idle', error: null, reposByUser: {}, statusByUser: {}, expandedUser: null };
+
+const $ = s => document.getElementById(s);
+const qInput = $('q'), clearBtn = $('clear'), inputWrap = $('inputWrap'), helper = $('helper'), searchBtn = $('searchBtn'), listEl = $('list'), emptyEl = $('empty'), resultMeta = $('resultMeta'), errorCard = $('errorCard'), pager = $('pager'), prevBtn = $('prevBtn'), nextBtn = $('nextBtn'), pageLabel = $('pageLabel'), pageOf = $('pageOf');
+
+function langColor(l){
+  const m={TypeScript:'#3178c6',JavaScript:'#f1e05a',Python:'#3572A5',Kotlin:'#A97BFF',Swift:'#ffac45',Go:'#00ADD8',Rust:'#dea584',Java:'#b07219',Dart:'#00B4AB'};
+  return m[l]||'#d6d3d1';
+}
+
+async function searchUsers(query, page=1){
+  const url = `https://api.github.com/search/users?q=${encodeURIComponent(query)}&per_page=${PER_PAGE}&page=${page}`;
+  const res = await fetch(url, { headers: { Accept:'application/vnd.github+json' }});
+  if(!res.ok) throw new Error(await res.text());
+  const j = await res.json();
+  return { items: j.items, totalCount: j.total_count };
+}
+async function fetchRepos(username){
+  const res = await fetch(`https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100&sort=updated`, { headers: { Accept:'application/vnd.github+json' }});
+  if(!res.ok) throw new Error(await res.text());
+  return await res.json();
+}
+
+function renderEmpty(){
+  if(state.status==='loading'){
+    emptyEl.innerHTML = '<div class="loading"><div class="spinner"></div><div>Searching GitHub…</div></div>';
+    emptyEl.classList.remove('hidden');
+    return;
+  }
+  if(!state.query){
+    emptyEl.innerHTML = '<div class="emptyEmoji">🔍</div><div style="font-weight:700;margin-top:6px">Start exploring</div><div style="font-size:11px;color:#78716c;margin-top:4px">Try "hafidrf", "torvalds", or any GitHub username.</div>';
+    emptyEl.classList.remove('hidden');
+    return;
+  }
+  if(state.status==='succeeded' && state.users.length===0){
+    emptyEl.innerHTML = '<div class="emptyEmoji">🫥</div><div style="font-weight:700;margin-top:6px">No users found</div><div style="font-size:11px;color:#78716c;margin-top:4px">Check the spelling or try another username.</div>';
+    emptyEl.classList.remove('hidden');
+    return;
+  }
+  emptyEl.classList.add('hidden');
+}
+
+function renderMeta(){
+  if(!state.query){ resultMeta.classList.add('hidden'); return; }
+  resultMeta.classList.remove('hidden');
+  const count = state.users.length ? `${state.users.length} of ` : '';
+  resultMeta.innerHTML = `<span>Showing <strong>${count}</strong>users for <strong>'${state.query}'</strong> <span style="color:#a8a29e">• ${state.totalCount||0} results</span></span><span>${state.status==='loading' ? '<span class="spinner" style="width:14px;height:14px;border-width:2px"></span>' : ''}</span>`;
+}
+
+function renderError(){
+  if(state.status==='failed' && state.error){
+    errorCard.textContent = String(state.error).slice(0,420);
+    errorCard.classList.remove('hidden');
+  } else errorCard.classList.add('hidden');
+}
+
+function renderPager(){
+  if(!state.users.length){ pager.classList.add('hidden'); return; }
+  pager.classList.remove('hidden');
+  const totalPages = Math.min(Math.ceil(Math.min(state.totalCount,1000)/PER_PAGE),100) || 1;
+  pageLabel.textContent = `Page ${state.page}`;
+  pageOf.textContent = `of ${totalPages}`;
+  prevBtn.disabled = state.page<=1;
+  nextBtn.disabled = !(state.users.length===PER_PAGE && state.page*PER_PAGE < Math.min(state.totalCount,1000));
+}
+
+function repoCard(r){
+  const stars = r.stargazers_count>=1000 ? (r.stargazers_count/1000).toFixed(r.stargazers_count>=10000?0:1)+'k' : String(r.stargazers_count);
+  return `<div class="repo">
+    <div class="repoTop">
+      <div style="flex:1;min-width:0">
+        <div class="repoTitle">${r.name}</div>
+        ${r.language ? `<div class="lang"><span class="dot" style="background:${langColor(r.language)}"></span>${r.language}</div>` : ''}
+      </div>
+      <div class="starChip">★ ${stars}</div>
+    </div>
+    <div class="desc">${(r.description||'No description')}</div>
+    <div class="meta">
+      <span>🍴 ${r.forks_count}</span><span>Updated ${new Date(r.updated_at).toLocaleDateString()}</span>
+      <a href="${r.html_url}" target="_blank" class="openBtn" title="Open repo">↗</a>
+    </div>
+  </div>`;
+}
+
+function renderList(){
+  listEl.innerHTML='';
+  state.users.forEach(u=>{
+    const expanded = state.expandedUser===u.login;
+    const repos = state.reposByUser[u.login]||[];
+    const s = state.statusByUser[u.login]||'idle';
+    const err = state.statusByUser[u.login+'_err'];
+    const card = document.createElement('div');
+    card.className='card';
+    if(expanded) card.style.borderColor='#d6d3d1';
+    card.innerHTML = `
+      <div class="accordionHeader" data-login="${u.login}">
+        <div class="avatar">${u.avatar_url ? `<img src="${u.avatar_url}" alt="">` : 'IMG'}</div>
+        <div class="userText"><div class="name">${u.login}</div><div class="sub">${expanded && repos.length ? repos.length+' repositories' : 'Tap to view repositories'}</div></div>
+        <div class="chevron">${expanded?'⌃':'⌄'}</div>
+      </div>
+      ${expanded ? `<div class="body">
+        ${s==='loading' ? '<div class="loading"><div class="spinner"></div><div>Loading repositories…</div></div>' : s==='failed' ? `<div style="text-align:center;padding:12px;color:#991b1b;font-size:12px">${err||'Failed to load repos'}</div><div style="text-align:center"><button class="pagerBtn" data-retry="${u.login}">Retry</button></div>` : repos.length===0 ? '<div style="text-align:center;padding:12px;color:#78716c;font-size:12px">No repositories</div>' : `<div style="display:flex;flex-direction:column;gap:10px">${repos.map(repoCard).join('')}</div>`}
+        <div style="height:1px;background:#e7e5e4;margin-top:14px"></div>
+        <a href="https://github.com/${u.login}?tab=repositories" target="_blank" style="display:block;text-align:center;margin-top:12px;background:#f5f5f4;border-radius:999px;padding:10px;font-weight:600;color:#1c1917;text-decoration:none">Open @${u.login} on GitHub ↗</a>
+      </div>` : ''}
+    `;
+    card.querySelector('.accordionHeader').addEventListener('click', ()=>toggleUser(u.login));
+    const retry = card.querySelector('[data-retry]');
+    if(retry) retry.addEventListener('click', ()=>loadRepos(u.login));
+    listEl.appendChild(card);
+  });
+}
+
+async function loadRepos(login){
+  if(state.statusByUser[login]==='loading') return;
+  state.statusByUser[login]='loading';
+  renderList();
+  try{
+    const repos = await fetchRepos(login);
+    state.reposByUser[login]=repos;
+    state.statusByUser[login]='succeeded';
+  }catch(e){
+    state.statusByUser[login]='failed';
+    state.statusByUser[login+'_err']= e.message||String(e);
+  }
+  renderList();
+}
+
+function toggleUser(login){
+  const willExpand = state.expandedUser!==login;
+  state.expandedUser = willExpand ? login : null;
+  if(willExpand && !state.reposByUser[login] && state.statusByUser[login]!=='loading'){
+    loadRepos(login);
+  }
+  renderList();
+}
+
+async function doSearch(q){
+  state.query=q; state.page=1; state.status='loading'; state.error=null;
+  qInput.value = q;
+  clearBtn.classList.toggle('hidden', !q.length);
+  renderMeta(); renderError(); renderEmpty(); renderPager();
+  searchBtn.disabled=true; searchBtn.textContent='Searching…';
+  try{
+    const {items,totalCount}=await searchUsers(q,1);
+    state.users=items; state.totalCount=totalCount; state.status='succeeded';
+  }catch(e){
+    state.status='failed'; state.error=e.message||String(e); state.users=[]; state.totalCount=0;
+  }
+  searchBtn.disabled=false; searchBtn.innerHTML='Search <span>→</span>';
+  renderMeta(); renderError(); renderEmpty(); renderList(); renderPager();
+}
+
+async function goPage(next){
+  state.page=next; state.status='loading';
+  renderMeta(); renderPager();
+  try{
+    const {items,totalCount}=await searchUsers(state.query,next);
+    state.users=items; state.totalCount=totalCount; state.status='succeeded';
+  }catch(e){ state.status='failed'; state.error=e.message||String(e); }
+  renderMeta(); renderError(); renderEmpty(); renderList(); renderPager();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// wiring
+qInput.addEventListener('input', e=>{
+  const v=e.target.value;
+  clearBtn.classList.toggle('hidden', !v.length);
+  inputWrap.style.borderColor = '#e7e5e4';
+  helper.classList.add('hidden');
+});
+clearBtn.addEventListener('click', ()=>{ qInput.value=''; clearBtn.classList.add('hidden'); qInput.focus(); });
+$('searchBtn').addEventListener('click', ()=>{
+  const q=qInput.value.trim();
+  if(!q){ helper.classList.remove('hidden'); inputWrap.style.borderColor='#fecaca'; return; }
+  doSearch(q);
+});
+qInput.addEventListener('keydown', e=>{ if(e.key==='Enter'){ $('searchBtn').click(); }});
+prevBtn.addEventListener('click', ()=>{ if(state.page>1) goPage(state.page-1); });
+nextBtn.addEventListener('click', ()=>{ goPage(state.page+1); });
+
+// expose for playwright automation
+window.__app = { doSearch, goPage, toggleUser, get state(){return state}, searchUsers, fetchRepos };
+
+renderEmpty(); renderMeta(); renderPager();
+</script>
+</body>
+</html>
