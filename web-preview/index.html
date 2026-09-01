@@ -25,9 +25,9 @@
   .subtitle{color:var(--muted);font-size:13px;line-height:1.5;margin:0;max-width:480px}
   .chips{display:flex;gap:8px;flex-wrap:wrap}
   .chip{background:#fff;border:1px solid var(--border);border-radius:999px;padding:6px 10px;font-size:11px;color:var(--muted);font-weight:600}
-  .lottieCard{width:160px;height:110px;background:#fff;border:1px solid var(--border);border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;box-shadow:0 8px 20px rgba(28,25,23,.06);align-self:center}
-  .lottieBlob{width:64px;height:44px;background:var(--primarySoft);border-radius:999px;display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:18px}
-  .lottieLabel{font-size:10px;color:var(--faint)}
+  .lottieCard{width:160px;height:110px;background:#fff;border:1px solid var(--border);border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;box-shadow:0 8px 20px rgba(28,25,23,.06);align-self:center;overflow:hidden;position:relative}
+  #lottie{width:140px;height:90px}
+  .lottieLabel{font-size:10px;color:var(--faint);position:absolute;bottom:6px;left:0;right:0;text-align:center;pointer-events:none;opacity:.0}
   .searchSurface{background:#fff;border:1px solid var(--border);border-radius:18px;padding:14px;box-shadow:0 8px 20px rgba(28,25,23,.06)}
   .inputWrap{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:14px;padding:10px 12px;background:#fff}
   .inputWrap:focus-within{border-color:var(--borderStrong);box-shadow:0 0 0 4px rgba(185,28,28,.08)}
@@ -83,7 +83,7 @@
       <div class="title">GitHub Repositories <span>Explorer</span></div>
       <p class="subtitle">Search any GitHub username and explore public repositories — fast, native, delightful.</p>
       <div class="chips"><span class="chip">◯ GitHub API</span><span class="chip">⚡ Fast</span><span class="chip">▣ Native</span></div>
-      <div class="lottieCard"><div class="lottieBlob">▶</div><div class="lottieLabel">Lottie animation</div></div>
+      <div class="lottieCard"><div id="lottie"></div><div class="lottieLabel">Lottie animation</div></div>
     </div>
 
     <!-- Search -->
@@ -306,6 +306,23 @@ nextBtn.addEventListener('click', ()=>{ goPage(state.page+1); });
 window.__app = { doSearch, goPage, toggleUser, get state(){return state}, searchUsers, fetchRepos };
 
 renderEmpty(); renderMeta(); renderPager();
+
+// Lottie real animation
+(function(){
+  const s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js';
+  s.onload=()=>{
+    fetch('./animation.json').then(r=>r.json()).then(data=>{
+      // lottie is global from lottie-web
+      // @ts-ignore
+      const anim = window.lottie.loadAnimation({ container: document.getElementById('lottie'), renderer:'svg', loop:true, autoplay:true, animationData: data });
+      anim.setSpeed(1);
+      window.__lottie = anim;
+    }).catch(()=>{ document.getElementById('lottie').innerHTML='<div style="color:#b91c1c;font-size:18px">▶</div>'; });
+  };
+  s.onerror=()=>{ document.getElementById('lottie').innerHTML='<div style="color:#b91c1c;font-size:18px">▶</div>'; };
+  document.head.appendChild(s);
+})();
 </script>
 </body>
 </html>
