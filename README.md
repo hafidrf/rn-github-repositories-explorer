@@ -6,7 +6,7 @@
 [![Tests](https://img.shields.io/badge/tests-29%20passed-brightgreen)](https://github.com/hafidrf/rn-github-repositories-explorer)
 [![Coverage](https://img.shields.io/badge/coverage-86%25-brightgreen)](https://github.com/hafidrf/rn-github-repositories-explorer)
 
-React Native (Bare) revamp of [hafidrf/github-repositories-explorer](https://github.com/hafidrf/github-repositories-explorer) — now with **Redux Toolkit**.
+React Native (Bare) revamp of [hafidrf/github-repositories-explorer](https://github.com/hafidrf/github-repositories-explorer), now with **Redux Toolkit**.
 
 Search GitHub users and browse their public repositories, natively on Android & iOS.
 
@@ -16,7 +16,7 @@ Search GitHub users and browse their public repositories, natively on Android & 
 |---|---|---|
 | ![Home](screenshots/01-home-empty.png) | ![Results](screenshots/02-search-results.png) | ![Detail](screenshots/03-repo-detail.png) |
 
-> Screenshots are **live captures** from the modern responsive build (warm stone palette, pill buttons, hero badge) via web preview (real GitHub API, 37 repos for `hafidrf`). The same code runs natively on Android & iOS — verified by 29 tests.
+> Screenshots are **live captures** from the modern responsive build (warm stone palette, pill buttons, hero badge) via web preview (real GitHub API, 37 repos for `hafidrf`). The same code runs natively on Android & iOS, verified by 29 tests.
 
 ## ✨ Features
 - Search GitHub users via `GET /search/users`
@@ -25,11 +25,11 @@ Search GitHub users and browse their public repositories, natively on Android & 
 - Redux Toolkit (`createAsyncThunk` + slices), typed hooks (`useAppDispatch`/`useAppSelector`)
 - React Native Paper UI + Lottie animation (ported from web)
 - Deep link to GitHub profile / repo
-- 29 tests, 86% coverage — production-grade
+- 29 tests, 86% coverage; production-grade
 
 ## 🛠️ Tech Stack
 - **React Native 0.81 (Bare)** + TypeScript 5.8
-- **Redux Toolkit 2 + React Redux 9** — slices: `searchSlice`, `reposSlice`
+- **Redux Toolkit 2 + React Redux 9**: slices: `searchSlice`, `reposSlice`
 - **React Native Paper 5**, Safe Area, Gesture Handler, Screens, Vector Icons
 - **Lottie React Native 7**
 - **Jest 29 + React Native Testing Library 14 + test-renderer**
@@ -51,7 +51,7 @@ No API token required for public search (rate-limited). For higher limits, add `
 ## 📁 Project Structure
 ```
 src/
-  api/github.ts              # GitHub REST (fetch) — searchUsers, fetchRepos
+  api/github.ts              # GitHub REST (fetch): searchUsers, fetchRepos
   store/
     index.ts                 # configureStore
     hooks.ts                 # typed useAppDispatch/useAppSelector
@@ -70,7 +70,7 @@ scripts/generate-screenshots.js  # generates mockups via node-canvas
 ```
 
 ## 🧪 Testing
-- 6 suites, 29 tests — slices (reducers + thunks), API (fetch mock), components, integration (HomeScreen + Redux), App smoke
+- 6 suites, 29 tests: slices (reducers + thunks), API (fetch mock), components, integration (HomeScreen + Redux), App smoke
 - Mocks: `react-native-gesture-handler`, `safe-area-context`, `lottie-react-native`, `vector-icons`
 - ESM transform for RN 0.81 + Paper via `transformIgnorePatterns`
 
